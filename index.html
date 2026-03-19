@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigating Protests Under the Racing Rules</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@500&display=swap');
+
+:root {
+  --navy:        #0a1628;
+  --navy-mid:    #1e3a5f;
+  --amber:       #d4a017;
+  --amber-bright:#ffd966;
+  --bg-page:     #f0f4f8;
+  --bg-white:    #ffffff;
+  --bg-alt:      #e8edf3;
+  --text-dark:   #0a1628;
+  --text-mid:    #1e3a5f;
+  --text-muted:  #4a5568;
+  --warn-bg:#fff0f0; --warn-border:#c0392b; --warn-text:#7b1d1d;
+  --info-bg:#e8f4fd; --info-border:#2980b9; --info-text:#1a4971;
+  --ok-bg:#eafaf1;   --ok-border:#27ae60;   --ok-text:#1a5c35;
+  --gold-bg:#fff8e1; --gold-border:#d4a017; --gold-text:#6b4d00;
+  --sidebar-w: 260px;
+  --header-h:  68px;
+  --radius:    10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: 'Source Sans 3', sans-serif; background: var(--bg-page); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; -webkit-text-size-adjust: 100%; }
+
+/* HEADER */
+header { background: var(--navy); border-bottom: 3px solid var(--amber); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: var(--header-h); position: sticky; top: 0; z-index: 300; box-shadow: 0 2px 14px rgba(0,0,0,0.4); flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.mobile-menu-btn { display: none; background: #1a3a5c; border: 2px solid var(--amber); border-radius: 7px; color: var(--amber-bright); font-size: 1.25rem; cursor: pointer; min-height: 44px; min-width: 44px; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; transition: background 0.15s; }
+.mobile-menu-btn:hover { background: #1e3a5f; }
+.anchor-icon { width: 40px; height: 40px; background: var(--amber); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; color: var(--navy); }
+header h1 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #ffffff; line-height: 1.25; min-width: 0; }
+header h1 .sub1 { display: block; font-size: 0.67rem; font-weight: 500; color: var(--amber-bright); font-family: 'Source Sans 3', sans-serif; letter-spacing: 0.07em; text-transform: uppercase; margin-top: 1px; }
+header h1 .sub2 { display: block; font-size: 0.62rem; font-weight: 500; color: #c8d8ec; font-family: 'Source Sans 3', sans-serif; letter-spacing: 0.03em; font-style: italic; }
+.header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.api-status-btn { font-size: 0.78rem; font-weight: 700; color: var(--amber-bright); background: #1a3a5c; border: 2px solid var(--amber-bright); border-radius: 20px; padding: 6px 14px; cursor: pointer; transition: background 0.2s; white-space: nowrap; min-height: 38px; }
+.api-status-btn:hover { background: #1e3a5f; }
+.api-status-btn.connected { border-color: #2ecc71; color: #2ecc71; background: #0d2e1a; }
+
+/* LAYOUT */
+.app-layout { display: flex; flex: 1; overflow: hidden; height: calc(100vh - var(--header-h)); }
+
+/* LEFT SIDEBAR */
+nav.sidebar { width: var(--sidebar-w); background: var(--navy); border-right: 3px solid var(--amber); overflow-y: auto; flex-shrink: 0; padding-bottom: 24px; }
+.sidebar-brand { padding: 16px 18px 14px; border-bottom: 2px solid #1e3a5f; background: #060e1a; }
+.sidebar-brand-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: #ffffff; line-height: 1.3; }
+.sidebar-brand-sub { display: block; font-size: 0.65rem; color: var(--amber-bright); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 3px; }
+.sidebar-brand-author { display: block; font-size: 0.62rem; color: #c8d8ec; font-style: italic; margin-top: 2px; }
+.nav-section-label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber-bright); padding: 16px 18px 5px; font-weight: 700; border-top: 1px solid #1e3a5f; margin-top: 4px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 12px 18px; cursor: pointer; transition: background 0.15s, border-color 0.15s; font-size: 0.9rem; font-weight: 500; color: #dce8f5; border-left: 4px solid transparent; line-height: 1.3; min-height: 48px; }
+.nav-item:hover { background: #132340; color: #ffffff; border-left-color: rgba(212,160,23,0.5); }
+.nav-item.active { background: #1e3a5f; color: var(--amber-bright); border-left-color: var(--amber-bright); font-weight: 700; }
+.nav-item .icon { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; line-height: 1; }
+
+/* MAIN */
+main { flex: 1; overflow-y: auto; background: var(--bg-page); }
+.section { display: none; padding: 28px 32px; max-width: 860px; animation: fadeIn 0.22s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+/* RIGHT AI PANEL */
+.ai-panel { width: 340px; background: var(--navy); border-left: 3px solid var(--amber); display: flex; flex-direction: column; flex-shrink: 0; }
+.ai-panel-header { padding: 14px 18px; border-bottom: 3px solid var(--amber); background: #060e1a; }
+.ai-panel-header h3 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--amber-bright); font-weight: 700; }
+.ai-panel-header p { font-size: 0.71rem; color: #c8d8ec; margin-top: 4px; line-height: 1.45; font-weight: 500; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #0d1e35; }
+.msg { padding: 11px 14px; border-radius: 9px; font-size: 0.875rem; line-height: 1.6; max-width: 97%; }
+.msg.system    { background: #1a3a5c; border: 2px solid var(--amber); color: #f0f6ff; align-self: flex-start; }
+.msg.user      { background: #1e3a5f; border: 2px solid #5a88bb; color: #ffffff; align-self: flex-end; }
+.msg.assistant { background: #102540; border: 2px solid #3d7bbf; color: #e8f2ff; align-self: flex-start; }
+.msg.loading   { background: #1a3a5c; border: 2px solid var(--amber); align-self: flex-start; padding: 12px 16px; }
+.typing-dots span { display: inline-block; width: 8px; height: 8px; background: var(--amber-bright); border-radius: 50%; margin: 0 3px; animation: bounce 1.2s infinite; }
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+.chat-input-area { padding: 10px 12px; border-top: 2px solid #1e3a5f; display: flex; flex-direction: column; gap: 7px; background: #0a1628; }
+.quick-questions { display: flex; flex-wrap: wrap; gap: 5px; }
+.quick-q { font-size: 0.72rem; padding: 5px 10px; background: #1a3a5c; border: 2px solid var(--amber); border-radius: 20px; color: var(--amber-bright); cursor: pointer; transition: background 0.15s; font-weight: 700; min-height: 32px; line-height: 1.2; font-family: 'Source Sans 3', sans-serif; }
+.quick-q:hover { background: #1e3a5f; }
+.chat-input-row { display: flex; gap: 8px; }
+#chatInput { flex: 1; background: #1a2e48; border: 2px solid #5a88bb; border-radius: 8px; padding: 10px 13px; color: #ffffff; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; resize: none; min-height: 44px; max-height: 100px; }
+#chatInput:focus { outline: none; border-color: var(--amber-bright); }
+#chatInput::placeholder { color: #7a98b8; }
+#sendBtn { background: var(--amber); border: none; border-radius: 8px; width: 48px; height: 48px; cursor: pointer; color: var(--navy); font-size: 1.15rem; font-weight: 700; transition: background 0.15s; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+#sendBtn:hover { background: var(--amber-bright); }
+#sendBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+.cost-note { font-size: 0.64rem; color: #8aaac8; text-align: center; line-height: 1.4; font-weight: 500; }
+.ai-instructions { background: #1a3a5c; border: 2px solid var(--amber); border-radius: 8px; padding: 11px 13px; margin-bottom: 7px; }
+.ai-instructions-title { font-size: 0.74rem; font-weight: 700; color: var(--amber-bright); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; }
+.ai-instructions p { font-size: 0.73rem; color: #d0e4f5; line-height: 1.5; margin: 0; }
+.ai-instructions-tip { margin-top: 6px; font-size: 0.7rem; color: var(--amber-bright); font-weight: 600; line-height: 1.45; border-top: 1px solid rgba(212,160,23,0.3); padding-top: 6px; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 400; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal { background: #ffffff; border: 2px solid var(--amber); border-radius: var(--radius); padding: 28px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); max-height: 90vh; overflow-y: auto; }
+.modal h2 { font-family: 'Playfair Display', serif; color: var(--navy); margin-bottom: 10px; font-size: 1.3rem; }
+.modal p { font-size: 0.9rem; color: var(--text-mid); line-height: 1.6; margin-bottom: 12px; }
+.modal-steps { background: var(--bg-alt); border-left: 4px solid var(--navy-mid); border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 14px 0; font-size: 0.875rem; line-height: 1.7; color: var(--text-dark); }
+.modal-steps ol { padding-left: 18px; }
+.modal-steps li { margin-bottom: 4px; }
+.modal-steps a { color: var(--navy-mid); font-weight: 600; }
+.cost-info { background: var(--gold-bg); border: 1.5px solid var(--gold-border); border-radius: 8px; padding: 12px 14px; font-size: 0.85rem; margin-bottom: 16px; color: var(--gold-text); line-height: 1.55; }
+.cost-info strong { color: var(--navy); }
+#apiKeyInput { width: 100%; background: #f8fafc; border: 2px solid #b0c4d8; border-radius: 8px; padding: 11px 14px; color: var(--text-dark); font-family: 'Source Code Pro', monospace; font-size: 0.875rem; margin-bottom: 14px; }
+#apiKeyInput:focus { outline: none; border-color: var(--navy-mid); }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.btn { padding: 11px 22px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; font-weight: 700; transition: all 0.15s; min-height: 44px; }
+.btn-primary { background: var(--navy); color: #ffffff; }
+.btn-primary:hover { background: var(--navy-mid); }
+.btn-secondary { background: transparent; color: var(--text-mid); border: 2px solid #b0c4d8; }
+.btn-secondary:hover { border-color: var(--navy-mid); color: var(--navy); }
+
+/* CONTENT STYLES */
+.page-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; line-height: 1.2; }
+.page-subtitle { font-size: 0.82rem; color: var(--amber); margin-bottom: 22px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; }
+.rule-ref { display: inline-block; background: var(--navy); border-radius: 4px; padding: 1px 7px; font-size: 0.75rem; font-family: 'Source Code Pro', monospace; font-weight: 500; color: var(--amber-bright); margin-left: 4px; vertical-align: middle; }
+.card { background: var(--bg-white); border: 1.5px solid #c8d8e8; border-left: 4px solid var(--navy-mid); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(10,22,40,0.07); }
+.card:hover { border-left-color: var(--amber); }
+.card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.3; }
+.card-title .badge { font-family: 'Source Sans 3', sans-serif; font-size: 0.68rem; background: var(--navy); color: var(--amber-bright); border-radius: 4px; padding: 2px 7px; font-weight: 700; letter-spacing: 0.06em; }
+.card-title .badge-red { background: #c0392b; }
+p.body-text { font-size: 0.9rem; line-height: 1.7; color: var(--text-mid); margin-bottom: 8px; }
+.section-divider { border: none; border-top: 2px solid #d0dde8; margin: 22px 0; }
+h2.subsection { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+h3.sub-sub { font-size: 0.95rem; font-weight: 700; color: var(--navy-mid); margin-bottom: 8px; margin-top: 16px; }
+ul.body-list { padding-left: 20px; font-size: 0.9rem; line-height: 1.9; color: var(--text-mid); margin-bottom: 12px; }
+ul.body-list li { margin-bottom: 2px; }
+
+.process-steps { counter-reset: step; list-style: none; margin: 14px 0; }
+.process-steps li { counter-increment: step; display: flex; gap: 12px; margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6; color: var(--text-mid); align-items: flex-start; }
+.process-steps li::before { content: counter(step); background: var(--navy); color: var(--amber-bright); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; margin-top: 2px; }
+.step-content strong { display: block; color: var(--navy); font-weight: 700; margin-bottom: 2px; font-size: 0.93rem; }
+
+.checklist { list-style: none; margin: 10px 0; }
+.checklist li { padding: 9px 0 9px 0; border-bottom: 1px solid #d8e4ee; font-size: 0.9rem; color: var(--text-dark); line-height: 1.55; display: flex; align-items: flex-start; gap: 10px; }
+.checklist li:last-child { border-bottom: none; }
+.checklist li .ci { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+
+.alert { padding: 13px 16px; border-radius: 8px; font-size: 0.875rem; line-height: 1.6; margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-start; }
+.alert-icon { font-size: 1.05rem; flex-shrink: 0; margin-top: 1px; }
+.alert-warning { background: var(--warn-bg); border: 1.5px solid var(--warn-border); border-left: 4px solid var(--warn-border); color: var(--warn-text); }
+.alert-info    { background: var(--info-bg); border: 1.5px solid var(--info-border); border-left: 4px solid var(--info-border); color: var(--info-text); }
+.alert-success { background: var(--ok-bg);   border: 1.5px solid var(--ok-border);   border-left: 4px solid var(--ok-border);   color: var(--ok-text); }
+.alert-gold    { background: var(--gold-bg);  border: 1.5px solid var(--gold-border); border-left: 4px solid var(--gold-border); color: var(--gold-text); }
+
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+
+/* ROLE SELECTOR */
+.role-selector { display: flex; gap: 0; border: 2px solid var(--amber); border-radius: var(--radius); overflow: hidden; margin-bottom: 22px; }
+.role-btn { flex: 1; background: #1a3a5c; border: none; color: #c8d8ec; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; font-weight: 700; padding: 12px 10px; cursor: pointer; transition: all 0.18s; text-align: center; min-height: 52px; line-height: 1.3; }
+.role-btn.active-protestor { background: var(--navy-mid); color: var(--amber-bright); border-bottom: 3px solid var(--amber-bright); }
+.role-btn.active-protestee { background: #5c1a1a; color: #ffb3b3; border-bottom: 3px solid #e57373; }
+.role-btn:hover:not(.active-protestor):not(.active-protestee) { background: #132340; color: #ffffff; }
+
+/* SECTION PANELS */
+.role-panel { display: none; }
+.role-panel.active { display: block; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #b0c4d8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--navy-mid); }
+
+/* MOBILE NAV */
+.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--navy); border-top: 3px solid var(--amber); z-index: 300; height: 60px; }
+.mobile-nav-inner { display: flex; height: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.mobile-nav-inner::-webkit-scrollbar { display: none; }
+.mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0 10px; cursor: pointer; flex-shrink: 0; min-width: 60px; border-top: 3px solid transparent; margin-top: -3px; transition: background 0.15s; -webkit-tap-highlight-color: transparent; }
+.mobile-nav-item.active { border-top-color: var(--amber-bright); background: #1a3a5c; }
+.mobile-nav-item .mnav-icon { font-size: 1.2rem; line-height: 1; color: #dce8f5; }
+.mobile-nav-item.active .mnav-icon { color: var(--amber-bright); }
+.mobile-nav-item .mnav-label { font-size: 0.55rem; font-weight: 700; color: #8aaac8; text-transform: uppercase; letter-spacing: 0.04em; text-align: center; }
+.mobile-nav-item.active .mnav-label { color: var(--amber-bright); }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; }
+.sidebar-overlay.open { display: block; }
+
+@media (max-width: 900px) { .ai-panel { display: none; } .section { padding: 20px 18px; } .home-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  :root { --header-h: 58px; }
+  header { padding: 0 10px; }
+  header h1 { font-size: 0.95rem; }
+  header h1 .sub1 { font-size: 0.6rem; }
+  header h1 .sub2 { display: none; }
+  .anchor-icon { width: 34px; height: 34px; font-size: 15px; }
+  .mobile-menu-btn { display: flex; }
+  nav.sidebar { position: fixed; top: 0; left: 0; width: min(300px,88vw); height: 100vh; z-index: 250; transform: translateX(-100%); transition: transform 0.25s ease; padding-top: calc(var(--header-h) + 4px); box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+  nav.sidebar.open { transform: translateX(0); }
+  .app-layout { height: calc(100vh - var(--header-h) - 60px); }
+  .mobile-nav { display: block; }
+  .section { padding: 16px 14px 20px; }
+  .page-title { font-size: 1.35rem; }
+  .page-subtitle { font-size: 0.75rem; margin-bottom: 16px; }
+  .card { padding: 14px 15px; }
+  p.body-text { font-size: 0.88rem; }
+  .checklist li { font-size: 0.88rem; }
+  h2.subsection { font-size: 1.1rem; }
+  .alert { font-size: 0.85rem; padding: 11px 13px; }
+  .btn { font-size: 0.85rem; padding: 10px 16px; }
+  .role-btn { font-size: 0.85rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <div class="mobile-nav-item active" data-mob="home"><span class="mnav-icon">&#127968;</span><span class="mnav-label">Home</span></div>
+    <div class="mobile-nav-item" data-mob="protestor"><span class="mnav-icon">&#128681;</span><span class="mnav-label">Protestor</span></div>
+    <div class="mobile-nav-item" data-mob="protestee"><span class="mnav-icon">&#128737;</span><span class="mnav-label">Protestee</span></div>
+    <div class="mobile-nav-item" data-mob="appeals"><span class="mnav-icon">&#128232;</span><span class="mnav-label">Appeals</span></div>
+    <div class="mobile-nav-item" data-mob="redress"><span class="mnav-icon">&#128260;</span><span class="mnav-label">Redress</span></div>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<header>
+  <div class="header-left">
+    <button class="mobile-menu-btn" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <div class="anchor-icon">&#9875;</div>
+    <h1>
+      Navigating Protests
+      <span class="sub1">Under the Racing Rules of Sailing 2025&#8211;2028</span>
+      <span class="sub2">Author: John Golding &nbsp;|&nbsp; Canada</span>
+    </h1>
+  </div>
+  <div class="header-right">
+    <button class="api-status-btn" id="apiStatusBtn">&#128273; Set API Key</button>
+  </div>
+</header>
+
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-title">&#9875; Navigating Protests</div>
+      <span class="sidebar-brand-sub">Racing Rules of Sailing 2025&#8211;2028</span>
+      <span class="sidebar-brand-author">Author: John Golding &nbsp;|&nbsp; Canada</span>
+    </div>
+    <div class="nav-section-label">Start Here</div>
+    <div class="nav-item active" data-section="home"><span class="icon">&#127968;</span><span>Overview &amp; How to Use</span></div>
+    <div class="nav-section-label">I Am the Protestor</div>
+    <div class="nav-item" data-section="p-water"><span class="icon">&#127754;</span><span>On the Water</span></div>
+    <div class="nav-item" data-section="p-form"><span class="icon">&#128221;</span><span>Filing the Protest Form</span></div>
+    <div class="nav-item" data-section="p-hearing"><span class="icon">&#9878;</span><span>The Hearing</span></div>
+    <div class="nav-section-label">I Am the Protestee</div>
+    <div class="nav-item" data-section="e-water"><span class="icon">&#127754;</span><span>On the Water</span></div>
+    <div class="nav-item" data-section="e-hearing"><span class="icon">&#9878;</span><span>The Hearing</span></div>
+    <div class="nav-section-label">After the Hearing</div>
+    <div class="nav-item" data-section="appeals"><span class="icon">&#128232;</span><span>Appeals</span></div>
+    <div class="nav-item" data-section="redress"><span class="icon">&#128260;</span><span>Request for Redress</span></div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main id="mainContent">
+
+    <!-- HOME -->
+    <div class="section active" id="section-home">
+      <div class="page-title">Navigating Protests</div>
+      <div class="page-subtitle">A guide for new competitors and coaches</div>
+
+      <div class="alert alert-gold">
+        <span class="alert-icon">&#9875;</span>
+        <div>This guide is for <strong>new racing sailors and coaches</strong> at all levels. It walks you through the protest process step by step &#8212; on the water and on shore. All content is drawn directly from the <strong>Racing Rules of Sailing 2025&#8211;2028 (RRS)</strong>, the <strong>World Sailing Case Book 2021&#8211;2024</strong>, the <strong>Judges&#39; Manual 2021</strong>, and <strong>Sail Canada Prescriptions 2025&#8211;2028</strong>. No alternative wording has been introduced.</div>
+      </div>
+
+      <div class="home-grid">
+        <div class="card" style="cursor:pointer" data-goto="p-water">
+          <div class="card-title">&#128681; I Am the Protestor <span class="badge">START HERE</span></div>
+          <p class="body-text">I believe another boat broke a rule. What do I do on the water, how do I file a protest, and what happens at the hearing?</p>
+        </div>
+        <div class="card" style="cursor:pointer" data-goto="e-water">
+          <div class="card-title">&#128737; I Am the Protestee <span class="badge">START HERE</span></div>
+          <p class="body-text">Another boat has protested me. Do I take a penalty? What happens at the hearing and what are my rights?</p>
+        </div>
+        <div class="card" style="cursor:pointer" data-goto="appeals">
+          <div class="card-title">&#128232; Appeals <span class="badge">AFTER HEARING</span></div>
+          <p class="body-text">When and how to appeal a protest committee decision to Sail Canada. What can and cannot be appealed.</p>
+        </div>
+        <div class="card" style="cursor:pointer" data-goto="redress">
+          <div class="card-title">&#128260; Request for Redress <span class="badge">AFTER HEARING</span></div>
+          <p class="body-text">How to request that your score be corrected when it was made significantly worse through no fault of your own.</p>
+        </div>
+      </div>
+
+      <h2 class="subsection">&#128203; What to Expect</h2>
+      <p class="body-text">A <strong>protest</strong> is a formal complaint that a racing rule was broken. There are specific steps required on the water and on shore. Missing any of them can mean your protest is not valid &#8212; or that you lose rights you would otherwise have.</p>
+      <p class="body-text">The process has two phases: <strong>on the water</strong> (during or right after the incident) and <strong>on shore</strong> (filing, hearings, and any appeals). The protest process is not about punishment &#8212; it is about applying the rules fairly. Hearings are conducted calmly and with structure. You will have a chance to tell your side, call witnesses, and ask questions.</p>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">&#128161;</span>
+        <div><strong>About the AI Assistant (right panel):</strong> Click <em>Set API Key</em> in the header to enter your Anthropic API key. Each question costs approximately <strong>$0.003&#8211;$0.008 USD</strong> &#8212; billed directly to <strong>Anthropic</strong>, not to the author of this guide. New accounts receive free credits. Get your key at <strong>console.anthropic.com</strong>.</div>
+      </div>
+    </div>
+
+    <!-- PROTESTOR: ON THE WATER -->
+    <div class="section" id="section-p-water">
+      <div class="page-title">&#128681; Protestor &#8212; On the Water</div>
+      <div class="page-subtitle">What to do at and immediately after the incident</div>
+
+      <div class="card">
+        <div class="card-title">Hailing &#8220;Protest&#8221; <span class="rule-ref">Rule 61.1(a)</span></div>
+        <p class="body-text">When you believe another boat has broken a rule, you must hail <strong>&#8220;Protest&#8221;</strong> as soon as reasonably possible after the incident. This is required. If you do not hail, your protest will almost certainly be ruled invalid at the hearing.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Displaying a Red Flag <span class="rule-ref">Rule 61.1(a)</span></div>
+        <p class="body-text">At the same time, display a <strong>red flag</strong> conspicuously and keep it flying until you finish or retire. In fleet racing the flag must be shown before or when you finish.</p>
+        <div class="alert alert-success" style="margin-top:10px;margin-bottom:0">
+          <span class="alert-icon">&#10003;</span>
+          <div><strong>Exception &#8212; small boats:</strong> If your boat is less than 6 metres (about 20 feet) in overall length, no flag is required. You must still hail &#8220;Protest.&#8221;</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Informing the Other Boat <span class="rule-ref">Rule 61.1(a)</span></div>
+        <p class="body-text">When you know the identity of the boat you intend to protest, try to inform her at the first reasonable opportunity. You are not required to succeed &#8212; but you must genuinely try. If she is too far away to hear, note that and carry on.</p>
+        <ul class="body-list">
+          <li>Hail by sail number or name: &#8220;Protest, [sail number]!&#8221;</li>
+          <li>If you could not identify the boat, record hull colour, class, and sail markings to describe her on the form.</li>
+          <li>You may also inform her on shore before the filing deadline.</li>
+        </ul>
+      </div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">&#9888;</span>
+        <div><strong>Critical:</strong> If you do not hail &#8220;Protest&#8221; at the time of the incident, the protest committee will ask. If you cannot confirm a hail was made, your protest will not proceed.</div>
+      </div>
+
+      <ol class="process-steps">
+        <li><div class="step-content"><strong>Incident occurs</strong>Immediately hail &#8220;Protest&#8221; loudly.</div></li>
+        <li><div class="step-content"><strong>Display red flag</strong>Hold it high and clearly visible. Keep it flying until you finish.</div></li>
+        <li><div class="step-content"><strong>Inform the other boat</strong>Hail her sail number. If she is out of earshot, try again as soon as possible.</div></li>
+        <li><div class="step-content"><strong>Note all details</strong>Time, location on course, positions of both boats, what happened. Write it down as soon as you finish.</div></li>
+        <li><div class="step-content"><strong>Go to the race office</strong>File your written protest within the time limit.</div></li>
+      </ol>
+    </div>
+
+    <!-- PROTESTOR: FILING THE FORM -->
+    <div class="section" id="section-p-form">
+      <div class="page-title">&#128221; Protestor &#8212; Filing the Form</div>
+      <div class="page-subtitle">What must be on the form, the deadline, and what is not required</div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">&#9888;</span>
+        <div><strong>Time Limit &#8212; Critical</strong> <span class="rule-ref">Rule 61.3</span> &nbsp; You must deliver your written protest to the race office within the time limit stated in the sailing instructions &#8212; typically two hours after the last boat in your class finishes. Check the sailing instructions. Missing this deadline will almost always result in dismissal. Under <strong>Sail Canada Prescriptions</strong>, no filing fee can be charged.</div>
+      </div>
+
+      <h2 class="subsection">What MUST Be on the Form <span class="rule-ref">Rule 61.2</span></h2>
+      <ul class="checklist">
+        <li><span class="ci">&#9989;</span><span>Identity (sail number or name) of the boat being protested</span></li>
+        <li><span class="ci">&#9989;</span><span>Identity of your boat (the protesting boat)</span></li>
+        <li><span class="ci">&#9989;</span><span>Date, time, and place of the incident</span></li>
+        <li><span class="ci">&#9989;</span><span>A brief description of what happened</span></li>
+        <li><span class="ci">&#9989;</span><span>The rule or rules you believe were broken (e.g. Rule 11 &#8212; On the Same Tack, Overlapped)</span></li>
+        <li><span class="ci">&#9989;</span><span>Name and signature of a representative of your boat</span></li>
+      </ul>
+
+      <h2 class="subsection">What is NOT Required</h2>
+      <ul class="checklist">
+        <li><span class="ci">&#9888;</span><span>You do <strong>not</strong> need to prove your case on the form &#8212; just describe what happened clearly.</span></li>
+        <li><span class="ci">&#9888;</span><span>You do <strong>not</strong> need a perfect diagram. A rough sketch is fine. The form can be amended before the hearing.</span></li>
+        <li><span class="ci">&#9888;</span><span>You do <strong>not</strong> need to know the exact rule number &#8212; approximate identification is acceptable.</span></li>
+        <li><span class="ci">&#9888;</span><span>No filing fee can be charged under Sail Canada Prescriptions.</span></li>
+      </ul>
+
+      <div class="alert alert-info" style="margin-top:16px">
+        <span class="alert-icon">&#128221;</span>
+        <div><span class="rule-ref">Rule 63.3</span> &nbsp; A protest that does not comply with rule 61 shall be ruled invalid. However, the protest committee <strong>may extend the time limit or permit amendment</strong> of a defective protest if there is good reason to do so. If in doubt, file and let the committee decide.</div>
+      </div>
+    </div>
+
+    <!-- PROTESTOR: THE HEARING -->
+    <div class="section" id="section-p-hearing">
+      <div class="page-title">&#9878; Protestor &#8212; The Hearing</div>
+      <div class="page-subtitle">What happens in the hearing room and your role</div>
+
+      <div class="card">
+        <div class="card-title">Notice and Your Right to Attend <span class="rule-ref">Rule 63.2</span></div>
+        <p class="body-text">The protest committee must give all parties reasonable notice of the hearing time and place. Both boats have the right to attend, present their case, call witnesses, and question the other party&#39;s witnesses.</p>
+      </div>
+
+      <h2 class="subsection">Order of Events</h2>
+      <ol class="process-steps">
+        <li><div class="step-content"><strong>Validity check</strong>The committee reads the form and confirms the protest is valid.</div></li>
+        <li><div class="step-content"><strong>Protestor presents</strong>You tell your version of the incident. Stick to what you directly observed. Bring your diagram and any notes.</div></li>
+        <li><div class="step-content"><strong>Protestee presents</strong>The other boat tells their version.</div></li>
+        <li><div class="step-content"><strong>Witnesses</strong>Both sides may call witnesses. All witnesses may be questioned by both parties and the committee.</div></li>
+        <li><div class="step-content"><strong>Parties leave</strong>Both boats leave the room while the committee deliberates.</div></li>
+        <li><div class="step-content"><strong>Decision announced</strong>Both parties are recalled. The decision is announced and must be given in writing on request.</div></li>
+      </ol>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">&#9878;</span>
+        <div><strong>Standard of Proof:</strong> The committee decides facts &#8220;on the balance of probabilities&#8221; &#8212; what most likely happened based on the evidence. You do not need to prove beyond a reasonable doubt.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tips for Protestors in the Room</div>
+        <ul class="body-list">
+          <li>Bring your diagram and notes made immediately after the race.</li>
+          <li>Speak clearly and describe only what you directly observed.</li>
+          <li>If you have a crew member who saw the incident, bring them as a witness.</li>
+          <li>Be respectful of the committee. They are qualified volunteers applying the rules fairly.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PROTESTEE: ON THE WATER -->
+    <div class="section" id="section-e-water">
+      <div class="page-title">&#128737; Protestee &#8212; On the Water</div>
+      <div class="page-subtitle">Your options when another boat hails &#8220;Protest&#8221;</div>
+
+      <div class="card">
+        <div class="card-title">Stay Calm &#8212; Note Everything</div>
+        <p class="body-text">If another boat hails &#8220;Protest&#8221; and displays a red flag, note the time, location on the course, which boats were involved, and exactly what each boat was doing. Your memory of these details is your most valuable evidence.</p>
+      </div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">&#128196;</span>
+        <div><strong>Read the NOR and Sailing Instructions Before Racing &#8212; Penalties Can Change</strong><br>
+        The Notice of Race (NOR) and Sailing Instructions (SIs) may modify the standard penalty system. The number of turns, the type of penalty, or the entire system may be different from event to event. You are responsible for knowing which system applies <em>before</em> the start. <span class="rule-ref">Rule 86.1</span> permits these changes. Do not assume the default rules apply without checking.</div>
+      </div>
+
+      <h2 class="subsection">Which Penalty System Applies? <span class="rule-ref">Rule 44 &amp; Appendix P</span></h2>
+      <p class="body-text">The Racing Rules of Sailing set a default, but the NOR or SIs for your event may change it. Three systems are commonly used:</p>
+
+      <div class="card">
+        <div class="card-title">&#128308; Two-Turns Penalty (Default) <span class="rule-ref">Rule 44.2</span></div>
+        <p class="body-text">The standard penalty when no change is specified in the sailing instructions. After breaking a rule of Part 2, take <strong>two full 360&#176; circles</strong> &#8212; each circle includes one tack and one gybe &#8212; as soon as possible after the incident, clear of other boats.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">&#128309; One-Turn Penalty <span class="rule-ref">Rule 44.1 / SI change</span></div>
+        <p class="body-text">Some events &#8212; particularly short-course or youth events &#8212; specify a <strong>One-Turn Penalty</strong> in the sailing instructions. If so, one full 360&#176; turn (one tack and one gybe) is sufficient. <strong>Only valid if stated in the SIs.</strong></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">&#128993; Scoring (Percentage) Penalty <span class="rule-ref">Appendix P</span></div>
+        <p class="body-text">Some offshore and long-distance events use a scoring penalty instead of turns. If the SIs specify Appendix P, hoist flag &#8220;I&#8221; (India) immediately and keep it flying until you finish. Your score is worsened by the specified percentage (commonly 20%). <strong>Only valid if specified in the SIs.</strong></p>
+      </div>
+
+      <h2 class="subsection" style="margin-top:4px">How to Take the Penalty (Turns)</h2>
+      <ol class="process-steps">
+        <li><div class="step-content"><strong>Move clear immediately</strong>Get away from other boats right after the incident.</div></li>
+        <li><div class="step-content"><strong>Complete the required turns</strong>One or two full 360&#176; circles as required &#8212; each includes one tack and one gybe. Do this as soon as possible, not at the next mark or finish.</div></li>
+        <li><div class="step-content"><strong>Resume racing</strong>Once the penalty is completed correctly, you are exonerated and the protest cannot proceed for that incident.</div></li>
+      </ol>
+
+      <h2 class="subsection" style="margin-top:20px">Option &#8212; Defend at the Hearing</h2>
+      <p class="body-text">If you believe you did not break a rule, you are not required to take any penalty. Carry on racing normally. The other boat will file a protest on shore, and you will have a full hearing to tell your side.</p>
+    </div>
+
+    <!-- PROTESTEE: THE HEARING -->
+    <div class="section" id="section-e-hearing">
+      <div class="page-title">&#9878; Protestee &#8212; The Hearing</div>
+      <div class="page-subtitle">What to expect and how to present your case</div>
+
+      <div class="card">
+        <div class="card-title">You Will Receive Notice <span class="rule-ref">Rule 63.2</span></div>
+        <p class="body-text">The race office will notify you that a protest has been filed against you, and tell you when and where the hearing will be held. You have the right to attend. Do not miss it &#8212; if you fail to attend without good reason, the committee may proceed without you.</p>
+      </div>
+
+      <h2 class="subsection">What to Bring</h2>
+      <ul class="checklist">
+        <li><span class="ci">&#9989;</span><span>Your own notes or diagram of the incident, made as soon as possible after the race.</span></li>
+        <li><span class="ci">&#9989;</span><span>Witnesses &#8212; crew members or other boats who saw what happened.</span></li>
+        <li><span class="ci">&#9989;</span><span>A calm, clear account of what you saw and where each boat was.</span></li>
+      </ul>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">&#9888;</span>
+        <div><span class="rule-ref">Rule 64.1(a)</span> &nbsp; When the committee finds a boat has broken a rule and is not exonerated, it <strong>shall disqualify her</strong> unless some other penalty applies. You have the right to receive the decision in writing and the right to appeal.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tips for Protestees in the Room</div>
+        <ul class="body-list">
+          <li>You are not there to argue with the other boat &#8212; you are presenting facts to the committee.</li>
+          <li>Be respectful. Hearings are run by qualified volunteers doing their best to apply the rules fairly.</li>
+          <li>Describe only what you directly observed. Do not guess at what the other boat was doing.</li>
+          <li>If you disagree with the outcome, you have full appeal rights.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- APPEALS -->
+    <div class="section" id="section-appeals">
+      <div class="page-title">&#128232; Appeals</div>
+      <div class="page-subtitle">Reviewing a protest committee decision &#8212; when and how</div>
+
+      <div class="alert alert-gold">
+        <span class="alert-icon">&#128232;</span>
+        <div><span class="rule-ref">Rule 70.1</span> &nbsp; A party to a protest hearing may appeal a decision of the protest committee, except when the sailing instructions have excluded the right to appeal or an international jury has been appointed.</div>
+      </div>
+
+      <div class="home-grid">
+        <div class="card">
+          <div class="card-title" style="color:#1a5c35">&#10003; When You CAN Appeal</div>
+          <ul class="body-list">
+            <li>The committee applied a rule <strong>incorrectly</strong> to the facts they found.</li>
+            <li>The procedure was improper &#8212; e.g. you were not given a fair chance to be heard.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#7b1d1d">&#10005; When You CANNOT Appeal</div>
+          <ul class="body-list">
+            <li>You disagree with the <strong>findings of fact</strong> (those cannot be appealed).</li>
+            <li>The sailing instructions state decisions are final (no-appeal event).</li>
+            <li>An international jury was appointed.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="subsection">How to Appeal &#8212; Sail Canada</h2>
+      <p class="body-text">Appeals are submitted in writing by email to: <strong>appeals [at] sailing.ca</strong></p>
+      <p class="body-text">Your appeal must include:</p>
+      <ul class="checklist">
+        <li><span class="ci">&#9989;</span><span>A copy of the protest form</span></li>
+        <li><span class="ci">&#9989;</span><span>The written decision of the protest committee</span></li>
+        <li><span class="ci">&#9989;</span><span>A written statement explaining which rule you believe was incorrectly applied and why</span></li>
+      </ul>
+
+      <div class="alert alert-success" style="margin-top:16px">
+        <span class="alert-icon">&#10003;</span>
+        <div><strong>Sail Canada Prescription &#8212; No Fee:</strong> No fee shall be charged for any procedure of the protest committee under Part 5 or Appendix T, including appeals. Sail Canada may delegate to a provincial appeals committee. Decisions of a provincial appeals committee may be further appealed to Sail Canada.</div>
+      </div>
+    </div>
+
+    <!-- REDRESS -->
+    <div class="section" id="section-redress">
+      <div class="page-title">&#128260; Request for Redress</div>
+      <div class="page-subtitle">Correcting an unfair score through no fault of your own</div>
+
+      <div class="alert alert-gold">
+        <span class="alert-icon">&#128260;</span>
+        <div><span class="rule-ref">Rule 62.1</span> &nbsp; A boat may request redress if her score has been, or may be, through <strong>no fault of her own</strong>, made significantly worse by: (a) an improper action or omission of the race committee, protest committee, organizing authority, or measurement committee; (b) injury or physical damage because of the action of a boat that was breaking a rule of Part 2 or of a vessel not racing; (c) giving help to a person or vessel in danger; or (d) a boat against which a penalty has been imposed under rule 2 or rule 69.2(b)(ii).</div>
+      </div>
+
+      <div class="home-grid">
+        <div class="card">
+          <div class="card-title">&#128681; Protest vs. Redress</div>
+          <p class="body-text">A <strong>protest</strong> is used when another boat broke a rule against you during racing.</p>
+          <p class="body-text">A <strong>request for redress</strong> is used when your score was harmed by race management error, accident, or rescue &#8212; not a rule breach by another competitor.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Common Grounds for Redress</div>
+          <ul class="body-list">
+            <li>Race committee gave an incorrect signal or shortened course improperly</li>
+            <li>You were physically damaged by a boat responding to an emergency</li>
+            <li>You stopped to help a person or vessel in danger</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="subsection">How to Request Redress</h2>
+      <ol class="process-steps">
+        <li><div class="step-content"><strong>File in writing</strong>Submit a written request for redress at the race office within the same time limit as a protest (check your sailing instructions).</div></li>
+        <li><div class="step-content"><strong>Describe the harm</strong>Explain what happened and how your score was significantly worsened through no fault of your own.</div></li>
+        <li><div class="step-content"><strong>A hearing is held</strong>The protest committee will hold a hearing using the same procedure as a protest hearing.</div></li>
+        <li><div class="step-content"><strong>Score adjusted if granted</strong>If redress is granted, the committee will adjust your score in a way that is equitable to all boats in the race or series.</div></li>
+      </ol>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">&#128161;</span>
+        <div>Any boat &#8212; whether protestor or protestee in a separate hearing &#8212; may separately request redress if the grounds under rule 62.1 apply. A request for redress is its own independent proceeding.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT AI PANEL -->
+  <aside class="ai-panel">
+    <div class="ai-panel-header">
+      <h3>&#129302; AI Assistant</h3>
+      <p>Answers drawn from the <strong style="color:#ffd966">RRS 2025&#8211;2028</strong>, World Sailing Case Book, Judges&#39; Manual, and Sail Canada Prescriptions only. No outside sources.</p>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg system">Welcome! Ask me anything about the protest process &#8212; hailing, filing, hearings, appeals, or redress. Use the quick questions below or type your own.</div>
+    </div>
+    <div class="chat-input-area">
+      <div class="ai-instructions">
+        <div class="ai-instructions-title">&#128172; Ask in Plain Language</div>
+        <p>Type any question about the protest process, penalties, hearings, appeals, or redress. No sailing jargon or legal language needed &#8212; ask exactly as you would ask a more experienced sailor.</p>
+        <div class="ai-instructions-tip">
+          &#128161; <strong>More detail = better answer.</strong> Instead of <em>&#8220;red flag?&#8221;</em> try <em>&#8220;Do I still need to display a red flag if my boat is a small dinghy under 6 metres?&#8221;</em>
+        </div>
+      </div>
+      <div class="quick-questions" id="quickQuestions">
+        <button class="quick-q">Do I need a red flag on a small dinghy?</button>
+        <button class="quick-q">What if I missed the time limit?</button>
+        <button class="quick-q">Can I appeal a finding of fact?</button>
+        <button class="quick-q">What is a Two-Turns Penalty?</button>
+        <button class="quick-q">Is there a fee to file in Canada?</button>
+        <button class="quick-q">What is the difference between appeal and redress?</button>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" placeholder="Ask about the protest process..." rows="1"></textarea>
+        <button id="sendBtn" title="Send">&#9658;</button>
+      </div>
+      <div class="cost-note">Each question ~$0.003&#8211;$0.008 USD &bull; Billed to Anthropic, not to the author</div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- API KEY MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>&#128273; Set Up the AI Assistant</h2>
+    <p>Enter your Anthropic API key to activate the AI assistant. Your key is saved in your browser and never sent anywhere except directly to Anthropic when you ask a question.</p>
+    <div class="modal-steps">
+      <ol>
+        <li>Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> and create a free account.</li>
+        <li>Click <strong>API Keys</strong> in the left menu, then <strong>Create Key</strong>.</li>
+        <li>Copy the key (starts with <code>sk-ant-</code>) and paste it below.</li>
+      </ol>
+    </div>
+    <div class="cost-info">
+      <strong>About costs:</strong> Each question costs approximately <strong>$0.003&#8211;$0.008 USD</strong> (less than one cent). These fees go directly to <strong>Anthropic</strong> &#8212; not to the author of this guide. You control your own API account and spending. New accounts receive free credits.
+    </div>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" />
+    <div class="modal-btns">
+      <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+      <button class="btn btn-primary" id="modalSave">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var apiKey = '';
+
+  var SYSTEM_PROMPT = 'You are an expert assistant helping new and young racing sailors and coaches understand the protest process under the Racing Rules of Sailing.\n\nAnswer ONLY using these official documents:\n1. Racing Rules of Sailing 2025-2028 (RRS)\n2. World Sailing Case Book 2021-2024\n3. Judges Manual 2021\n4. Sail Canada Prescriptions 2025-2028\n\nKEY RULES:\n- Rule 61.1(a): Hail Protest and display red flag ASAP. No flag needed if boat under 6 metres overall length.\n- Rule 61.2: Protest form must contain identity of protestee, protestor, incident details, description, and rules alleged broken.\n- Rule 61.3: Protest delivered within time limit in sailing instructions.\n- Rule 62.1: Redress grounds: race committee error, damage from rule-breaking boat, giving help to person in danger.\n- Rule 63: All parties entitled to be heard, call witnesses, question witnesses.\n- Rule 64.1: Disqualification is standard penalty when rule found broken.\n- Rule 70.1: Any party may appeal except at no-appeal events or with international jury.\n- Rule 44: Two-Turns Penalty - two full 360-degree turns including two tacks and two gybes, done ASAP.\n- Appendix P: Scoring penalty alternative when specified in sailing instructions - fly flag I until finish.\n- Sail Canada Prescriptions: No fee charged for protest procedures or appeals. Appeal to: appeals at sailing.ca.\n- Appendix R: Sail Canada may delegate to provincial appeals committees. Further appeal to Sail Canada possible.\n\nSTYLE: Grade 12 reading level. Clear and direct. Do NOT paraphrase rules in ways that alter meaning. Use correct RRS terminology. Be encouraging and calm. Concise answers: 3-6 sentences or a short list. If outside these documents, say so and suggest speaking with a race officer.';
+
+  // ── NAVIGATION ───────────────────────────────────────────────────────
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    var target = document.getElementById('section-' + id);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(function(n) {
+      n.classList.toggle('active', n.getAttribute('data-section') === id);
+    });
+    closeSidebar();
+    var main = document.getElementById('mainContent');
+    if (main) main.scrollTop = 0;
+    updateQuickQuestions(id);
+  }
+
+  // ── SIDEBAR ──────────────────────────────────────────────────────────
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+
+  // ── MODAL ────────────────────────────────────────────────────────────
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    var inp = document.getElementById('apiKeyInput');
+    if (apiKey) inp.value = apiKey;
+    setTimeout(function() { inp.focus(); }, 100);
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+  function saveKeyFromModal() {
+    var val = document.getElementById('apiKeyInput').value.trim();
+    if (!val.startsWith('sk-')) {
+      alert('That does not look like a valid Anthropic key (should start with sk-ant-).');
+      return;
+    }
+    apiKey = val;
+    try { localStorage.setItem('sailing_protest_api_key', val); } catch(e) {}
+    var btn = document.getElementById('apiStatusBtn');
+    btn.textContent = String.fromCharCode(128273) + ' API Key Active';
+    btn.classList.add('connected');
+    closeModal();
+    addMessage('system', 'API key saved. The AI assistant is now active. Ask me anything about the protest process!');
+  }
+
+  // ── QUICK QUESTIONS per section ───────────────────────────────────────
+  var sectionQs = {
+    'p-water':  ['Do I need a red flag on a dinghy?', 'What if I forgot to hail right away?', 'Can I inform the other boat on shore?'],
+    'p-form':   ['What if I don\'t know the exact rule number?', 'Can I amend the form after filing?', 'Is there a filing fee in Canada?'],
+    'p-hearing':['What if I am nervous in the hearing?', 'Can I question the other boat\'s witnesses?', 'What is the standard of proof?'],
+    'e-water':  ['What counts as a complete Two-Turns Penalty?', 'If I take a penalty does the protest go away?', 'When is the Scoring Penalty available?'],
+    'e-hearing':['Can I bring a support person to the hearing?', 'What if I cannot attend the hearing?', 'What happens if the committee decides against me?'],
+    'appeals':  ['Can I appeal a finding of fact?', 'What is the time limit for an appeal?', 'What is a provincial appeals committee?'],
+    'redress':  ['Is redress the same as a protest?', 'What score will I get if redress is granted?', 'Can I request redress and appeal at the same time?'],
+    'home':     ['Do I need a red flag on a small dinghy?', 'What if I missed the time limit?', 'What is the difference between appeal and redress?', 'What is a Two-Turns Penalty?']
+  };
+
+  function updateQuickQuestions(id) {
+    var qs = sectionQs[id] || sectionQs['home'];
+    var container = document.getElementById('quickQuestions');
+    container.innerHTML = '';
+    qs.forEach(function(q) {
+      var btn = document.createElement('button');
+      btn.className = 'quick-q';
+      btn.textContent = q;
+      btn.addEventListener('click', function() { sendMessage(q); });
+      container.appendChild(btn);
+    });
+  }
+
+  // ── CHAT ─────────────────────────────────────────────────────────────
+  var chatHistory = [];
+
+  function addMessage(type, text) {
+    var container = document.getElementById('chatMessages');
+    var div = document.createElement('div');
+    div.className = 'msg ' + type;
+    var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    safe = safe.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    div.innerHTML = safe;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div;
+  }
+
+  function addLoadingMsg() {
+    var container = document.getElementById('chatMessages');
+    var div = document.createElement('div');
+    div.className = 'msg loading';
+    div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div;
+  }
+
+  function sendMessage(text) {
+    if (!text) {
+      text = document.getElementById('chatInput').value.trim();
+    }
+    if (!text) return;
+    if (!apiKey) { openModal(); return; }
+    document.getElementById('chatInput').value = '';
+
+    addMessage('user', text);
+    chatHistory.push({ role: 'user', content: text });
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+    var sendBtn = document.getElementById('sendBtn');
+    sendBtn.disabled = true;
+    var loading = addLoadingMsg();
+
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 700,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      loading.remove();
+      if (data.error) {
+        addMessage('system', 'Error: ' + data.error.message);
+        chatHistory.pop();
+      } else {
+        var reply = data.content.map(function(c) { return c.text || ''; }).join('');
+        chatHistory.push({ role: 'assistant', content: reply });
+        addMessage('assistant', reply);
+      }
+      sendBtn.disabled = false;
+    })
+    .catch(function(err) {
+      loading.remove();
+      addMessage('system', 'Network error: ' + err.message);
+      chatHistory.pop();
+      sendBtn.disabled = false;
+    });
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────────
+  function init() {
+    // Load saved key
+    try {
+      var stored = localStorage.getItem('sailing_protest_api_key') || '';
+      if (stored && stored.startsWith('sk-')) {
+        apiKey = stored;
+        var btn = document.getElementById('apiStatusBtn');
+        btn.textContent = String.fromCharCode(128273) + ' API Key Active';
+        btn.classList.add('connected');
+        addMessage('system', 'API key loaded from browser. AI assistant is ready!');
+      }
+    } catch(e) {}
+
+    // Nav items
+    document.querySelectorAll('.nav-item').forEach(function(item) {
+      item.addEventListener('click', function() { showSection(item.getAttribute('data-section')); });
+    });
+
+    // Home grid cards
+    document.querySelectorAll('.card[data-goto]').forEach(function(card) {
+      card.addEventListener('click', function() { showSection(card.getAttribute('data-goto')); });
+    });
+
+    // Mobile nav
+    document.querySelectorAll('.mobile-nav-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.mobile-nav-item').forEach(function(m) { m.classList.remove('active'); });
+        item.classList.add('active');
+        showSection(item.getAttribute('data-mob'));
+      });
+    });
+
+    // Header buttons
+    document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
+    document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+    document.getElementById('apiStatusBtn').addEventListener('click', openModal);
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSave').addEventListener('click', saveKeyFromModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // Chat
+    document.getElementById('sendBtn').addEventListener('click', function() { sendMessage(''); });
+    document.getElementById('chatInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(''); }
+    });
+
+    // API key input enter
+    document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') saveKeyFromModal();
+    });
+
+    // Initial quick questions
+    updateQuickQuestions('home');
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
